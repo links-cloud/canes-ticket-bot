@@ -1,0 +1,34 @@
+# Carolina Hurricanes ticket-monitor config.
+# Edit the games list and thresholds; everything else is wired up for you.
+
+team: "Carolina Hurricanes"
+venue: "PNC Arena"
+venue_city: "Raleigh"
+
+# Section classification for PNC Arena.
+# 100s = lower bowl, 200s = club, 300s = upper bowl.
+# Anything matching "lower_sections" uses the lower threshold; "upper_sections" uses upper.
+section_classification:
+  lower_sections: ["1", "C"]   # section numbers starting with 1 (100s) or "C" (club)
+  upper_sections: ["3"]        # section numbers starting with 3 (300s)
+  # 200-level (club) is treated as lower since it's premium seating.
+  # Override per-game below if you want different behavior.
+
+games:
+  - id: "game5"
+    label: "Game 5 vs Vegas (SCF)"
+    date: "2026-06-11"          # Thursday - Home GM3
+    thresholds:
+      lower: 1200
+      upper: 800
+  - id: "game7"
+    label: "Game 7 vs Vegas (SCF)"
+    date: "2026-06-17"          # Wednesday - Home GM4
+    thresholds:
+      lower: 1200
+      upper: 800
+
+# Alert behavior:
+# - send_repeat_alerts: false  -> only alert once per (game, site, level) until price goes back up
+# - send_repeat_alerts: true   -> alert every run that price is below threshold
+send_repeat_alerts: false
