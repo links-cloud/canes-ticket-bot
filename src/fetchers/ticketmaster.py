@@ -101,9 +101,12 @@ async def _scrape(event_id: str, event_url: str, game_id: str,
             # Collect matching responses synchronously; read their JSON
             # AFTER the page settles but BEFORE we close the browser.
             captured: list = []
+            facets_urls_seen: list = []
 
             def on_response(resp):
                 u = resp.url
+                if "/ismds/event/" in u and "facets" in u:
+                    facets_urls_seen.append(u)
                 if (f"/ismds/event/{event_id}/facets" in u
                         and "by=shape" in u
                         and "show=listpricerange" in u):
@@ -113,7 +116,13 @@ async def _scrape(event_id: str, event_url: str, game_id: str,
             await page.goto(event_url, wait_until="domcontentloaded", timeout=60000)
             # Let the listings panel + facets load.
             await asyncio.sleep(10)
+            title = await page.title()
             html = await page.content()
+            print(f"[ticketmaster] DIAG page title: {title!r}")
+            print(f"[ticketmaster] DIAG html length: {len(html)}")
+            print(f"[ticketmaster] DIAG facets URLs seen: {len(facets_urls_seen)}, matched: {len(captured)}")
+            for u in facets_urls_seen[:3]:
+                print(f"[ticketmaster] DIAG seen: {u[:180]}")
 
             for resp in captured:
                 try:
