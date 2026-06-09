@@ -24,7 +24,9 @@ def cheapest_per_level(listings: List[Listing]) -> Dict[str, Listing]:
 def threshold_for(level: str, game: Game) -> float:
     if level == "upper":
         return game.upper_threshold
-    # "lower" or "unknown" -> use the more conservative (lower-bowl) threshold
+    if level == "sro":
+        return game.sro_threshold
+    # "lower" or "unknown" -> use the lower-bowl threshold (most permissive)
     return game.lower_threshold
 
 
@@ -50,7 +52,11 @@ def run() -> int:
                 continue
 
             best_by_level = cheapest_per_level(listings)
-            for level, lst in best_by_level.items():
+            # Iterate in a stable order so logs/alerts are deterministic.
+            for level in ("upper", "lower", "sro", "unknown"):
+                lst = best_by_level.get(level)
+                if lst is None:
+                    continue
                 threshold = threshold_for(level, game)
                 tag = f"{site_name} {level} sec {lst.section}"
                 print(f"  {tag}: ${lst.price:.0f} (threshold ${threshold:.0f})")

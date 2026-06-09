@@ -11,6 +11,7 @@ class Game:
     date: str
     lower_threshold: float
     upper_threshold: float
+    sro_threshold: float
 
 
 @dataclass
@@ -33,6 +34,9 @@ def load(path: str = "config.yaml") -> Config:
             date=g["date"],
             lower_threshold=float(g["thresholds"]["lower"]),
             upper_threshold=float(g["thresholds"]["upper"]),
+            sro_threshold=float(
+                g["thresholds"].get("sro", g["thresholds"]["upper"])
+            ),
         )
         for g in raw["games"]
     ]

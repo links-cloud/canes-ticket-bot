@@ -21,12 +21,14 @@ games:
     thresholds:
       lower: 1200
       upper: 800
+      sro: 800                  # standing room only
   - id: "game7"
     label: "Game 7 vs Vegas (SCF)"
     date: "2026-06-17"          # Wednesday - Home GM4
     thresholds:
       lower: 1200
       upper: 800
+      sro: 800
 
 # Alert behavior:
 # - send_repeat_alerts: false  -> only alert once per (game, site, level) until price goes back up
