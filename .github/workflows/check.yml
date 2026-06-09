@@ -1,11 +1,11 @@
 name: Check ticket prices
 
 on:
-  schedule:
-    # Every 15 minutes. GitHub Actions cron is best-effort and can lag a few
-    # minutes under load; that's fine for resale ticket monitoring.
-    - cron: "*/15 * * * *"
-  workflow_dispatch: {}  # allow manual runs from the Actions tab
+  # Schedule disabled: Akamai blocks GH Actions IPs for Ticketmaster, so the
+  # bot now runs locally via launchd on the Mac (see run.sh + plist in repo).
+  # Keeping workflow_dispatch so we can manually re-run if SeatGeek is added
+  # later (SG doesn't have the IP-blocking problem).
+  workflow_dispatch: {}
 
 permissions:
   contents: write   # needed to commit updated state/last_alert.json back

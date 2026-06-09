@@ -4,7 +4,10 @@ Monitors single-ticket prices for Carolina Hurricanes home games across
 SeatGeek, Ticketmaster, StubHub, and Vivid Seats. Sends an SMS via Twilio
 when the cheapest listing drops below a per-level threshold.
 
-Runs on GitHub Actions every 15 minutes.
+Runs locally on macOS via launchd every 15 minutes. GitHub Actions
+disabled for the schedule (kept for manual runs only) because Ticketmaster's
+Akamai bot protection blocks GH Actions datacenter IPs. Residential IP from
+the home Mac sails through.
 
 ## How it works
 
@@ -65,7 +68,32 @@ Free at https://seatgeek.com/account/develop — you only need the
 Free at https://developer-acct.ticketmaster.com/user/login — create a new
 app and copy the **Consumer Key**. This is your `TICKETMASTER_API_KEY`.
 
-### 5. GitHub repo + secrets
+### 5. Local launchd setup (active execution mode)
+
+```bash
+cd /Users/rk/projects/canes-ticket-bot
+# .env with secrets (chmod 600):
+cat > .env <<'EOF'
+TICKETMASTER_API_KEY=...
+PUSHOVER_APP_TOKEN=...
+PUSHOVER_USER_KEY=...
+EOF
+chmod 600 .env
+
+# Install the LaunchAgent
+cp scripts/com.linkscloud.canes-bot.plist ~/Library/LaunchAgents/
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.linkscloud.canes-bot.plist
+
+# Check status
+launchctl print gui/$(id -u)/com.linkscloud.canes-bot | grep -E "state|last exit"
+
+# Tail logs
+tail -f logs/bot.log
+```
+
+To stop: `launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.linkscloud.canes-bot.plist`
+
+### 6. GitHub repo + secrets (manual-trigger mode only)
 
 ```bash
 cd /Users/rk/projects/canes-ticket-bot
